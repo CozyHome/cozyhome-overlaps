@@ -81,7 +81,8 @@ namespace com.chs.final
             bool lastStepResolved = false;
             Vector3 naivePosition = position;
 
-            while (steps-- >= 0)
+            while (steps-- >= 0 &&
+                !lastStepResolved) // only continue loop if we've not resolved yet
                 lastStepResolved = Pushback(ref naivePosition,
                     orientation,
                     tmpColliderBuffer,
@@ -123,7 +124,8 @@ namespace com.chs.final
             int nbOverlapsWritten = 0;
             Vector3 naivePosition = position;
 
-            while (steps-- >= 0)
+            while (steps-- >= 0 &&
+                !lastStepResolved)
                 lastStepResolved = StorePushback(
                     ref nbOverlapsWritten,
                     ref naivePosition,
@@ -205,7 +207,7 @@ namespace com.chs.final
                 }
             }
 
-            return overlapsDetected;
+            return !overlapsDetected;
         }
 
         /// <summary>
@@ -244,7 +246,7 @@ namespace com.chs.final
 
             if (overlapsDetected) // attempt solve:
             {
-                for (int j = 0; j < nbColliderOverlaps; j++) // loop through queried colliders and resolve the first valid penetration
+                for (int j = nbColliderOverlaps - 1; j >= 0; j--) // loop through queried colliders and resolve the first valid penetration
                 {
                     Transform overlapTransform = tmpColliderBuffer[j].transform;
 
@@ -265,7 +267,7 @@ namespace com.chs.final
                 }
             }
 
-            return overlapsDetected;
+            return !overlapsDetected;
         }
     }
 
