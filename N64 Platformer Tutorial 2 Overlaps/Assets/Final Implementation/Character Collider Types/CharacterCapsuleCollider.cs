@@ -19,7 +19,6 @@ namespace com.chs.final
         /// </summary>
         public const float TRACEBIAS = 0.001F;
 
-
         public override int Overlap(Vector3 position,
             Quaternion orientation,
             LayerMask validOverlapMask,
@@ -43,8 +42,8 @@ namespace com.chs.final
                 interactionType);
 
             // filters wont really need to be declared concretely as overlaps will require 
-            // contextual additions on their own most of the time
-            return nbCollidersOverlapped; 
+            // contextual resolutions on their own most of the time
+            return nbCollidersOverlapped;
         }
 
         /// <summary>
@@ -91,9 +90,6 @@ namespace com.chs.final
         /// The implementation of the blueprint method that returns a reference to our CapsuleCollider component
         /// </summary>
         /// <returns></returns>
-        public override Collider Collider()
-        {
-            return Capsule_C;
-        }
+        public override Collider Collider() { return Capsule_C; }
     }
 }
