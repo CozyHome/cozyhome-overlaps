@@ -73,8 +73,8 @@ namespace com.chs.final
 
             Vector3 capsuleSegmentLength = (orientation * Vector3.up) * (inflate + Capsule_C.height * 0.5F - Capsule_C.radius);
 
-            int tracedCollidersCount = Physics.CapsuleCastNonAlloc
-            (position + capsuleSegmentLength,
+            int tracedCollidersCount = Physics.CapsuleCastNonAlloc(
+            position + capsuleSegmentLength,
             position - capsuleSegmentLength,
             Capsule_C.radius + inflate,
             direction,
