@@ -47,7 +47,7 @@ namespace com.chs.final
         {
             Vector3 resolvedPosition = internalPosition;
 
-            int nbPushbacksRegisted = CharacterCol.StoreIterativePushback(
+            int nbPushbacksRegistered = CharacterCol.StoreIterativePushback(
                 out bool wasResolved,
                 3, // attempt resolve three times per fixed update
                 ref resolvedPosition, // pass in position to be written to
@@ -63,9 +63,9 @@ namespace com.chs.final
                 internalPosition = resolvedPosition;
             }
 
-            if (nbPushbacksRegisted > 0)
+            if (nbPushbacksRegistered > 0)
             {
-                for (int i = nbPushbacksRegisted - 1; i >= 0; i--)
+                for (int i = nbPushbacksRegistered - 1; i >= 0; i--)
                 {
                     Debug.DrawRay(internalPosition, internalOverlapHits[i].normal, Color.red);
                 }
