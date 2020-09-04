@@ -313,7 +313,7 @@ namespace com.chs.final
                 float closestTrace = Mathf.Infinity; // cache a closestTrace distance float to use obtain the closest index
                 closestIndex = -1; // assume negative one to signify nothing was hit
 
-                while (tmpIndex > 0)
+                while (tmpIndex-- > 0)
                 {
                     // Subtract our trace bias to not incorrectly report hit distance:
                     tmpBuffer[tmpIndex].distance -= traceBias;
@@ -342,7 +342,6 @@ namespace com.chs.final
                             tmpBuffer[tmpIndex] = tmpBuffer[tracedColliderCount];
                         }
                     }
-
                 }
             }
 
@@ -364,7 +363,7 @@ namespace com.chs.final
                 float closestTrace = Mathf.Infinity;
                 closestIndex = -1;
 
-                while (tmpIndex > 0)
+                while (tmpIndex-- > 0)
                 {
                     tmpBuffer[tmpIndex].distance -= traceBias;
                     RaycastHit tmpHit = tmpBuffer[tmpIndex];
@@ -381,7 +380,6 @@ namespace com.chs.final
                     else
                         tracedColliderCount--;
 
-                    tmpIndex--;
                 }
             }
         }
@@ -404,7 +402,7 @@ namespace com.chs.final
             float furthestTrace = 0F;
             furthestIndex = -1;
 
-            while (tmpIndex > 0)
+            while (tmpIndex-- > 0)
             {
                 tmpBuffer[tmpIndex].distance -= traceBias;
                 RaycastHit tmpHit = tmpBuffer[tmpIndex];
@@ -426,7 +424,6 @@ namespace com.chs.final
                     }
                 }
 
-                tmpIndex--;
             }
         }
 
@@ -448,7 +445,7 @@ namespace com.chs.final
             float furthestTrace = 0F;
             furthestIndex = -1;
 
-            while (tmpIndex > 0)
+            while (tmpIndex-- > 0)
             {
                 tmpBuffer[tmpIndex].distance -= traceBias;
                 RaycastHit tmpHit = tmpBuffer[tmpIndex];
@@ -465,7 +462,6 @@ namespace com.chs.final
                 else
                     tracedColliderCount--;
 
-                tmpIndex--;
             }
         }
 
