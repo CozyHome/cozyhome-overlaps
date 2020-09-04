@@ -58,6 +58,7 @@ namespace com.chs.final
 
         /// <summary>
         /// The generic method used to iteratively resolve an overlap between this CharacterCollider and other colliders.
+        /// <br/>I suggest that you write your own filters and pushback method for customizability.
         /// </summary>
         /// <param name="steps"></param>
         /// <param name="position"></param>
@@ -68,25 +69,27 @@ namespace com.chs.final
         /// <param name="interactionType"></param>
         /// <param name="inflate"></param>
         /// <returns></returns>
-        public bool IterativePushback(int steps,
-            ref Vector3 position,
-            Quaternion orientation,
-            Collider[] tmpColliderBuffer,
-            LayerMask validOverlapsMask,
-            QueryTriggerInteraction interactionType,
-            float inflate = 0F)
+        public bool IterativePushback(int steps, // maximum resolutions during an iterative loop
+            ref Vector3 position, // the position to modify, don't pass your actual position in here, use a localy defined one to then set to
+            Quaternion orientation, // the orientation of your primitive
+            Collider[] tmpColliderBuffer, // the collider buffer to write to for our overlaps
+            LayerMask validOverlapsMask, // the layermask filter for our overlaps
+            QueryTriggerInteraction interactionType, // the query interaction type 
+            float inflate = 0F) // our optional inflate var
         {
-            steps = Mathf.Min(steps, MaxOverlapResolutions);
+            steps = Mathf.Min(steps, MaxOverlapResolutions); // cap steps to 5 as to not royally fuck performance
             bool lastStepResolved = false;
 
             while (steps-- >= 0 && !lastStepResolved) // only continue loop if we've not resolved yet
-                lastStepResolved = Pushback(ref position,
-                    orientation,
-                    tmpColliderBuffer,
-                    validOverlapsMask,
-                    interactionType,
-                    inflate);
+                lastStepResolved = Pushback(ref position, // pass in our position to write to
+                    orientation, // pass orientation
+                    tmpColliderBuffer, // pass buffer
+                    validOverlapsMask, // layermask pass
+                    interactionType, // query interaction pass
+                    inflate); // inflate pass
 
+            // return if we've resolved our last overlap. 
+            // this is helpful in cases where warping occurs and the primitive is stuck between two colliders continuously.
             return lastStepResolved;
         }
 
@@ -177,8 +180,7 @@ namespace com.chs.final
                     Collider overlapCollider = tmpColliderBuffer[j];
                     Transform overlapTransform = overlapCollider.transform;
 
-                    if (Physics.ComputePenetration(
-                        self,
+                    if (Physics.ComputePenetration(self,
                         position,
                         orientation,
                         overlapCollider,
@@ -227,8 +229,7 @@ namespace com.chs.final
                     tmpColliderBuffer,
                     inflate);
 
-            OverlapFilters.FilterSelf(
-                ref nbColliderOverlaps,
+            OverlapFilters.FilterSelf(ref nbColliderOverlaps,
                 tmpColliderBuffer,
                 self);
 
@@ -238,13 +239,14 @@ namespace com.chs.final
             {
                 for (int j = nbColliderOverlaps - 1; j >= 0; j--) // loop through queried colliders and resolve the first valid penetration
                 {
+                    Collider overlapCollider = tmpColliderBuffer[j];
                     Transform overlapTransform = tmpColliderBuffer[j].transform;
 
                     if (Physics.ComputePenetration(
                         self,
                         position,
                         orientation,
-                        tmpColliderBuffer[j],
+                        overlapCollider,
                         overlapTransform.position,
                         overlapTransform.rotation,
                         out Vector3 overlapNormal,
@@ -261,6 +263,9 @@ namespace com.chs.final
         }
     }
 
+    /// <summary>
+    /// Overlap Filters have been moved here to clean the CharacterCollider class.
+    /// </summary>
     public static class OverlapFilters
     {
         public static void FilterSelf(ref int overlappedCollidersCount,
