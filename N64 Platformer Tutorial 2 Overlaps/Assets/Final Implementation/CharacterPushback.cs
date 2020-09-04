@@ -23,10 +23,11 @@ namespace com.chs.final
 
         void FixedUpdate()
         {
+            Vector3 resolvedPosition = internalPosition;
+
             if (CharacterCol.IterativePushback(
                 3, // attempt resolve three times per fixed update
-                internalPosition, // pass in position to be written to
-                out Vector3 resolvedPosition,
+                ref resolvedPosition, // pass in position to be written to
                 internalRotation, // pass in rotation
                 internalColliderOverlaps, // pass in collider buffer
                 validOverlapMask, // pass in overlap layermask
@@ -34,7 +35,7 @@ namespace com.chs.final
                 0F)) // pass in inflate
             {
                 internalPosition = resolvedPosition;
-            } 
+            }
 
             transform.position = internalPosition;
             transform.rotation = internalRotation;

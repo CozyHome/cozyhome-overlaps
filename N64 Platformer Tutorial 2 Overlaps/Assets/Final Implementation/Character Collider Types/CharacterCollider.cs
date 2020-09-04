@@ -69,8 +69,7 @@ namespace com.chs.final
         /// <param name="inflate"></param>
         /// <returns></returns>
         public bool IterativePushback(int steps,
-            Vector3 position,
-            out Vector3 lastResolutionPosition,
+            ref Vector3 position,
             Quaternion orientation,
             Collider[] tmpColliderBuffer,
             LayerMask validOverlapsMask,
@@ -79,18 +78,14 @@ namespace com.chs.final
         {
             steps = Mathf.Min(steps, MaxOverlapResolutions);
             bool lastStepResolved = false;
-            Vector3 naivePosition = position;
 
-            while (steps-- >= 0 &&
-                !lastStepResolved) // only continue loop if we've not resolved yet
-                lastStepResolved = Pushback(ref naivePosition,
+            while (steps-- >= 0 && !lastStepResolved) // only continue loop if we've not resolved yet
+                lastStepResolved = Pushback(ref position,
                     orientation,
                     tmpColliderBuffer,
                     validOverlapsMask,
-                    QueryTriggerInteraction.Ignore,
+                    interactionType,
                     inflate);
-
-            lastResolutionPosition = naivePosition;
 
             return lastStepResolved;
         }
@@ -110,8 +105,7 @@ namespace com.chs.final
         /// <returns></returns>
         public bool StoreIterativePushback(
             int steps,
-            Vector3 position,
-            out Vector3 lastResolutionPosition,
+            ref Vector3 position,
             Quaternion orientation,
             Collider[] tmpColliderBuffer,
             OverlapHit[] tmpOverlapBuffer,
@@ -120,23 +114,19 @@ namespace com.chs.final
             float inflate = 0F)
         {
             steps = Mathf.Min(steps, MaxOverlapResolutions);
-            bool lastStepResolved = false;
-            int nbOverlapsWritten = 0;
-            Vector3 naivePosition = position;
 
-            while (steps-- >= 0 &&
-                !lastStepResolved)
-                lastStepResolved = StorePushback(
-                    ref nbOverlapsWritten,
-                    ref naivePosition,
+            int nbOverlapsWritten = 0;
+            bool lastStepResolved = false;
+
+            while (steps-- >= 0 && !lastStepResolved)
+                lastStepResolved = StorePushback(ref nbOverlapsWritten,
+                    ref position,
                     orientation,
                     tmpColliderBuffer,
                     tmpOverlapBuffer,
                     validOverlapsMask,
-                    QueryTriggerInteraction.Ignore,
+                    interactionType,
                     inflate);
-
-            lastResolutionPosition = naivePosition;
 
             return lastStepResolved;
         }
