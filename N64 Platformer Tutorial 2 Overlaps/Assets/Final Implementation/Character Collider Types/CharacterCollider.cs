@@ -6,8 +6,6 @@ namespace com.chs.final
     /// A custom MonoBehaviour script that combines the Collider component system with tracing and filter methods
     /// to easily allow for the implmementation of casting primitives in the physics worldspace.
     /// </summary>
-    /// 
-
     public abstract class CharacterCollider : MonoBehaviour
     {
         const int MaxOverlapResolutions = 8;
@@ -80,7 +78,7 @@ namespace com.chs.final
             steps = Mathf.Min(steps, MaxOverlapResolutions); // cap steps to 5 as to not royally fuck performance
             bool lastStepResolved = false;
 
-            while (steps-- >= 0 && !lastStepResolved) // only continue loop if we've not resolved yet
+            while (steps-- > 0 && !lastStepResolved) // only continue loop if we've not resolved yet
                 lastStepResolved = Pushback(ref position, // pass in our position to write to
                     orientation, // pass orientation
                     tmpColliderBuffer, // pass buffer
@@ -121,7 +119,7 @@ namespace com.chs.final
             int nbOverlapsWritten = 0;
             lastStepResolved = false;
 
-            while (steps-- >= 0 && !lastStepResolved)
+            while (steps-- > 0 && !lastStepResolved)
                 lastStepResolved = StorePushback(ref nbOverlapsWritten,
                     ref position,
                     orientation,
