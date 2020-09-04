@@ -70,7 +70,7 @@ namespace com.chs.final
         /// <param name="inflate"></param>
         /// <returns></returns>
         public bool IterativePushback(int steps, // maximum resolutions during an iterative loop
-            ref Vector3 position, // the position to modify, don't pass your actual position in here, use a localy defined one to then set to
+            ref Vector3 position, // the position to modify, don't pass your actual position in here, use a locally defined one to then set to
             Quaternion orientation, // the orientation of your primitive
             Collider[] tmpColliderBuffer, // the collider buffer to write to for our overlaps
             LayerMask validOverlapsMask, // the layermask filter for our overlaps
