@@ -133,7 +133,9 @@ namespace com.chs.final
         }
 
         /// <summary>
-        /// The step called every iteration in the IterativePushback method call.
+        /// The step called every iteration in the IterativePushback method call. <br/>
+        /// You may want to hardcode this into your own collision response scripts as i haven't tested to see if its optimal with so many
+        /// method calls passing in all these parameters over and over again.
         /// </summary>
         /// <param name="position"></param>
         /// <param name="orientation"></param>
@@ -438,9 +440,10 @@ namespace com.chs.final
         /// <param name="closestIndex"></param>
         /// <param name="self"></param>
         /// <param name="traceBias"></param>
-        public static void FindFurthest(ref int tracedColliderCount,
-        RaycastHit[] tmpBuffer,
+        public static void FindFurthest(
+        ref int tracedColliderCount,
         out int furthestIndex,
+        RaycastHit[] tmpBuffer,
         Collider self,
         float traceBias = 0F)
         {
