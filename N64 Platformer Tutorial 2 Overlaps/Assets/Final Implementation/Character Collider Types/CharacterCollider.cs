@@ -303,9 +303,10 @@ namespace com.chs.final
         /// <param name="closestIndex"></param>
         /// <param name="self"></param>
         /// <param name="traceBias"></param>
-        public static void FindClosestFilterInvalids(ref int tracedColliderCount,
-        RaycastHit[] tmpBuffer,
+        public static void FindClosestFilterInvalids(
+        ref int tracedColliderCount,
         out int closestIndex,
+        RaycastHit[] tmpBuffer,
         Collider self,
         float traceBias = 0F)
         {
@@ -353,9 +354,10 @@ namespace com.chs.final
         /// <param name="closestIndex"></param>
         /// <param name="self"></param>
         /// <param name="traceBias"></param>
-        public static void FindClosest(ref int tracedColliderCount,
-            RaycastHit[] tmpBuffer,
+        public static void FindClosest(
+            ref int tracedColliderCount,
             out int closestIndex,
+            RaycastHit[] tmpBuffer,
             Collider self,
             float traceBias = 0F)
         {
@@ -392,9 +394,10 @@ namespace com.chs.final
         /// <param name="closestIndex"></param>
         /// <param name="self"></param>
         /// <param name="traceBias"></param>
-        public static void FindFurthestFilterInvalids(ref int tracedColliderCount,
-        RaycastHit[] tmpBuffer,
+        public static void FindFurthestFilterInvalids(
+        ref int tracedColliderCount,
         out int furthestIndex,
+        RaycastHit[] tmpBuffer,
         Collider self,
         float traceBias = 0F)
         {
