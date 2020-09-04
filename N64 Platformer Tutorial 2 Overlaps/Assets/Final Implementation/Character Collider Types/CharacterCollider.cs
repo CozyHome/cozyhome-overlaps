@@ -106,7 +106,8 @@ namespace com.chs.final
         /// <param name="interactionType"></param>
         /// <param name="inflate"></param>
         /// <returns></returns>
-        public bool StoreIterativePushback(
+        public int StoreIterativePushback(
+            out bool lastStepResolved,
             int steps,
             ref Vector3 position,
             Quaternion orientation,
@@ -118,7 +119,7 @@ namespace com.chs.final
         {
             steps = Mathf.Min(steps, MaxOverlapResolutions);
             int nbOverlapsWritten = 0;
-            bool lastStepResolved = false;
+            lastStepResolved = false;
 
             while (steps-- >= 0 && !lastStepResolved)
                 lastStepResolved = StorePushback(ref nbOverlapsWritten,
@@ -130,7 +131,7 @@ namespace com.chs.final
                     interactionType,
                     inflate);
 
-            return lastStepResolved;
+            return nbOverlapsWritten;
         }
 
         /// <summary>
@@ -288,101 +289,102 @@ namespace com.chs.final
                     continue;
             }
         }
+    }
+
+    /// <summary>
+    /// Trace Filters have been moved here to clean the CharacterCollider class.
+    /// </summary>
+    public static class TraceFilters
+    {
+        /// <summary>
+        /// FindClosestFilterInvalids() will return the index of the closest RaycastHit during the physics query. <br/>
+        /// This method can also filter out any hits that you deem invalid.
+        /// </summary>
+        /// <param name="tracedColliderCount"></param>
+        /// <param name="tmpBuffer"></param>
+        /// <param name="closestIndex"></param>
+        /// <param name="self"></param>
+        /// <param name="traceBias"></param>
+        public static void FindClosestFilterInvalids(ref int tracedColliderCount,
+        RaycastHit[] tmpBuffer,
+        out int closestIndex,
+        Collider self,
+        float traceBias = 0F)
+        {
+            int tmpIndex = tracedColliderCount; // start our array accessor at the size and decrement in loop call to prevent any mistakes causing a crash 
+            float closestTrace = Mathf.Infinity; // cache a closestTrace distance float to use obtain the closest index
+            closestIndex = -1; // assume negative one to signify nothing was hit
+
+            while (tmpIndex-- > 0)
+            {
+                // Subtract our trace bias to not incorrectly report hit distance:
+                tmpBuffer[tmpIndex].distance -= traceBias;
+
+                // Cache a temporary hit reference to avoid excessive array access:
+                RaycastHit tmpHit = tmpBuffer[tmpIndex];
+                float traceLength = tmpHit.distance;
+
+                bool customValidHitCheck = true;
+
+                // Valid hit branch:
+                if (traceLength > 0F && // if trace length is not negative (hit is further than us along direction line)
+                    tmpHit.collider != self && // if trace hit is not us
+                    customValidHitCheck) // override the filter method and boolean to allow for custom checks (be creative :> )
+                {
+                    if (traceLength < closestTrace)
+                    {
+                        closestIndex = tmpIndex;
+                        closestTrace = traceLength;
+                    }
+                }
+                else // Invalid hit branch:
+                {
+                    if (tmpIndex < --tracedColliderCount)
+                    {
+                        tmpBuffer[tmpIndex] = tmpBuffer[tracedColliderCount];
+                    }
+                }
+            }
+        }
 
         /// <summary>
-        /// Trace Filters have been moved here to clean the CharacterCollider class.
+        /// FindClosest() will return the index of the closest RaycastHit during the physics query.
         /// </summary>
-        public static class TraceFilters
-        {
-            /// <summary>
-            /// FindClosestFilterInvalids() will return the index of the closest RaycastHit during the physics query. <br/>
-            /// This method can also filter out any hits that you deem invalid.
-            /// </summary>
-            /// <param name="tracedColliderCount"></param>
-            /// <param name="tmpBuffer"></param>
-            /// <param name="closestIndex"></param>
-            /// <param name="self"></param>
-            /// <param name="traceBias"></param>
-            public static void FindClosestFilterInvalids(ref int tracedColliderCount,
+        /// <param name="tracedColliderCount"></param>
+        /// <param name="tmpBuffer"></param>
+        /// <param name="closestIndex"></param>
+        /// <param name="self"></param>
+        /// <param name="traceBias"></param>
+        public static void FindClosest(ref int tracedColliderCount,
             RaycastHit[] tmpBuffer,
             out int closestIndex,
             Collider self,
             float traceBias = 0F)
+        {
+            int tmpIndex = tracedColliderCount;
+            float closestTrace = Mathf.Infinity;
+            closestIndex = -1;
+
+            while (tmpIndex-- > 0)
             {
-                int tmpIndex = tracedColliderCount; // start our array accessor at the size and decrement in loop call to prevent any mistakes causing a crash 
-                float closestTrace = Mathf.Infinity; // cache a closestTrace distance float to use obtain the closest index
-                closestIndex = -1; // assume negative one to signify nothing was hit
+                tmpBuffer[tmpIndex].distance -= traceBias;
+                RaycastHit tmpHit = tmpBuffer[tmpIndex];
+                float traceLength = tmpHit.distance;
 
-                while (tmpIndex-- > 0)
+                if (traceLength > 0F && tmpHit.collider != self)
                 {
-                    // Subtract our trace bias to not incorrectly report hit distance:
-                    tmpBuffer[tmpIndex].distance -= traceBias;
-
-                    // Cache a temporary hit reference to avoid excessive array access:
-                    RaycastHit tmpHit = tmpBuffer[tmpIndex];
-                    float traceLength = tmpHit.distance;
-
-                    bool customValidHitCheck = true;
-
-                    // Valid hit branch:
-                    if (traceLength > 0F && // if trace length is not negative (hit is further than us along direction line)
-                        tmpHit.collider != self && // if trace hit is not us
-                        customValidHitCheck) // override the filter method and boolean to allow for custom checks (be creative :> )
+                    if (traceLength < closestTrace)
                     {
-                        if (traceLength < closestTrace)
-                        {
-                            closestIndex = tmpIndex;
-                            closestTrace = traceLength;
-                        }
-                    }
-                    else // Invalid hit branch:
-                    {
-                        if (tmpIndex < --tracedColliderCount)
-                        {
-                            tmpBuffer[tmpIndex] = tmpBuffer[tracedColliderCount];
-                        }
+                        closestIndex = tmpIndex;
+                        closestTrace = traceLength;
                     }
                 }
-            }
+                else
+                    tracedColliderCount--;
 
-            /// <summary>
-            /// FindClosest() will return the index of the closest RaycastHit during the physics query.
-            /// </summary>
-            /// <param name="tracedColliderCount"></param>
-            /// <param name="tmpBuffer"></param>
-            /// <param name="closestIndex"></param>
-            /// <param name="self"></param>
-            /// <param name="traceBias"></param>
-            public static void FindClosest(ref int tracedColliderCount,
-                RaycastHit[] tmpBuffer,
-                out int closestIndex,
-                Collider self,
-                float traceBias = 0F)
-            {
-                int tmpIndex = tracedColliderCount;
-                float closestTrace = Mathf.Infinity;
-                closestIndex = -1;
-
-                while (tmpIndex-- > 0)
-                {
-                    tmpBuffer[tmpIndex].distance -= traceBias;
-                    RaycastHit tmpHit = tmpBuffer[tmpIndex];
-                    float traceLength = tmpHit.distance;
-
-                    if (traceLength > 0F && tmpHit.collider != self)
-                    {
-                        if (traceLength < closestTrace)
-                        {
-                            closestIndex = tmpIndex;
-                            closestTrace = traceLength;
-                        }
-                    }
-                    else
-                        tracedColliderCount--;
-
-                }
             }
         }
+
         /// <summary>
         /// FindFurthestFilterInvalids() will return the index of the furthest RaycastHit during the physics query. <br/>
         /// This method can also filter out any hits that you deem invalid.

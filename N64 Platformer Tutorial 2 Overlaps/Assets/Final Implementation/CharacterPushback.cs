@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace com.chs.final
 {
@@ -23,22 +21,56 @@ namespace com.chs.final
 
         void FixedUpdate()
         {
+            // ResolvePushbacks();
+            ResolvePushbacksAndStore();
+            transform.position = internalPosition;
+            transform.rotation = internalRotation;
+        }
+
+        void ResolvePushbacks()
+        {
             Vector3 resolvedPosition = internalPosition;
 
-            if (CharacterCol.IterativePushback(
+            if (CharacterCol.IterativePushback(3,
+                ref resolvedPosition,
+                internalRotation,
+                internalColliderOverlaps,
+                validOverlapMask,
+                QueryTriggerInteraction.Ignore,
+                0F))
+            {
+                internalPosition = resolvedPosition;
+            }
+        }
+
+        void ResolvePushbacksAndStore()
+        {
+            Vector3 resolvedPosition = internalPosition;
+
+            int nbPushbacksRegisted = CharacterCol.StoreIterativePushback(
+                out bool wasResolved,
                 3, // attempt resolve three times per fixed update
                 ref resolvedPosition, // pass in position to be written to
                 internalRotation, // pass in rotation
                 internalColliderOverlaps, // pass in collider buffer
+                internalOverlapHits,
                 validOverlapMask, // pass in overlap layermask
                 QueryTriggerInteraction.Ignore, // pass in query type
-                0F)) // pass in inflate
+                0F); // pass in inflate
+
+            if (wasResolved)
             {
                 internalPosition = resolvedPosition;
             }
 
-            transform.position = internalPosition;
-            transform.rotation = internalRotation;
+            if (nbPushbacksRegisted > 0)
+            {
+                for (int i = nbPushbacksRegisted - 1; i >= 0; i--)
+                {
+                    Debug.DrawRay(internalPosition, internalOverlapHits[i].normal, Color.red);
+                }
+            }
+
         }
     }
 }
