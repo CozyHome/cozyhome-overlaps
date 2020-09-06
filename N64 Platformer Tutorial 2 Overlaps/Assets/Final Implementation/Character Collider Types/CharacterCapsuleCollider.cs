@@ -41,8 +41,6 @@ namespace com.chs.final
                 validOverlapMask,
                 interactionType);
 
-            // filters wont really need to be declared concretely as overlaps will require 
-            // contextual resolutions on their own most of the time
             return nbCollidersOverlapped;
         }
 
